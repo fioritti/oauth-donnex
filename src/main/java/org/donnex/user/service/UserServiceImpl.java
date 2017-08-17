@@ -10,6 +10,9 @@ import org.donnex.user.model.User;
 import org.donnex.user.repository.RoleRepository;
 import org.donnex.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +44,10 @@ public class UserServiceImpl {
         user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
 		userRepository.save(user);
 	}
+
+	public User loadUserByUsername(String username) {
+		return userRepository.findByEmail(username);
+	}
+
 
 }
