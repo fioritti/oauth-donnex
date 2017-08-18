@@ -1,35 +1,51 @@
 package org.donnex.user.security;
 
+import java.util.Collections;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.donnex.user.service.UserServiceImpl;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 public class TokenAuthenticationService {
-
-	private static final String AUTH_HEADER_NAME = "X-AUTH-TOKEN";
-
-	private final TokenHandler tokenHandler;
 	
-	public TokenAuthenticationService(String secret, UserServiceImpl userService) {
-		tokenHandler = new TokenHandler(secret, userService);
+	// EXPIRATION_TIME = 10 dias
+	static final long EXPIRATION_TIME = 860_000_000;
+	static final String SECRET = "MySecret";
+	static final String TOKEN_PREFIX = "Bearer";
+	static final String HEADER_STRING = "Authorization";
+	
+	static void addAuthentication(HttpServletResponse response, String username) {
+		String JWT = Jwts.builder()
+				.setSubject(username)
+				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+				.signWith(SignatureAlgorithm.HS512, SECRET)
+				.compact();
+		
+		response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
 	}
-
-	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
-		final User user = (User) authentication.getPrincipal();
-		response.addHeader(AUTH_HEADER_NAME, tokenHandler.createTokenForUser(user));
-	}
-
-	public Authentication getAuthentication(HttpServletRequest request) {
-		final String token = request.getHeader(AUTH_HEADER_NAME);
+	
+	static Authentication getAuthentication(HttpServletRequest request) {
+		String token = request.getHeader(HEADER_STRING);
+		
 		if (token != null) {
-			final org.donnex.user.model.User user = tokenHandler.parseUserFromToken(token);
+			// faz parse do token
+			String user = Jwts.parser()
+					.setSigningKey(SECRET)
+					.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+					.getBody()
+					.getSubject();
+			
 			if (user != null) {
-				return new UserAuthentication(user);
+				return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
 			}
 		}
 		return null;
 	}
+	
 }
