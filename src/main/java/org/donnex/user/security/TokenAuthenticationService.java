@@ -1,6 +1,5 @@
 package org.donnex.user.security;
 
-import java.util.Collections;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +7,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,12 +22,17 @@ public class TokenAuthenticationService {
 	static final String TOKEN_PREFIX = "Bearer";
 	static final String HEADER_STRING = "Authorization";
 	
-	static void addAuthentication(HttpServletResponse response, String username) {
-		String JWT = Jwts.builder()
-				.setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-				.signWith(SignatureAlgorithm.HS512, SECRET)
-				.compact();
+	static void addAuthentication(HttpServletResponse response, UserAuthentication usetAuthentication) {
+		String JWT = null;
+		try {
+			JWT = Jwts.builder()
+					.setSubject(new ObjectMapper().writeValueAsString(usetAuthentication))
+					.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+					.signWith(SignatureAlgorithm.HS512, SECRET)
+					.compact();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 		
 		response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
 	}
@@ -41,9 +48,15 @@ public class TokenAuthenticationService {
 					.getBody()
 					.getSubject();
 			
-			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+			try {
+				UserAuthentication userAuthentication = new ObjectMapper().readValue(user, UserAuthentication.class);
+				if (userAuthentication != null) {
+					return new UsernamePasswordAuthenticationToken(userAuthentication.getPrincipal(), null, userAuthentication.getAuthorities());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			
 		}
 		return null;
 	}

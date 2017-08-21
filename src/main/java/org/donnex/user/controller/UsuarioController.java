@@ -2,6 +2,7 @@ package org.donnex.user.controller;
 
 import org.donnex.user.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,10 +34,19 @@ public class UsuarioController {
 //		return modelAndView;
 //	}
 	
+	
+	
 	@RequestMapping(method = RequestMethod.GET,value="/home")
 	public String hello() {
 		return "Hello buddy!";
 	}
+	
+	@Secured("ADMIN")
+	@RequestMapping(method = RequestMethod.GET,value="/teste")
+	public String teste() {
+		return "Hello teste!";
+	}
+	
 	
 	@RequestMapping(method = RequestMethod.GET,value="/users")
 	@ResponseBody

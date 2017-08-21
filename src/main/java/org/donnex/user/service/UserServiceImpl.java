@@ -20,7 +20,32 @@ public class UserServiceImpl {
 	public void init() {
 		Role role = new Role();
 		role.setRole("ADMIN");
-		roleRepository.save(role);
+		
+		User user = new User();
+		user.setActive(1);
+		user.setEmail("guileme13@gmail.com");
+		user.setLastName("fioritti");
+		user.setName("guilherme");
+		user.setPassword(passwordencoder.encode("nova1010"));
+		user.setRoles(new HashSet<>(Arrays.asList(role)));
+		
+		userRepository.save(user);
+		
+		Role role2 = new Role();
+		role2.setRole("COMMON");
+		
+		User user2 = new User();
+		user2.setActive(1);
+		user2.setEmail("joao@donnex.com");
+		user2.setLastName("silva");
+		user2.setName("joao");
+		user2.setPassword(passwordencoder.encode("nova1010"));
+		user2.setRoles(new HashSet<>(Arrays.asList(role2)));
+		
+		userRepository.save(user2);
+		
+		
+		
 	}
 
 	@Autowired

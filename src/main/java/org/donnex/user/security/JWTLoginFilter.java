@@ -19,7 +19,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
-
+	
 	public JWTLoginFilter(String url, AuthenticationManager authManager) {
 		super(new AntPathRequestMatcher(url));
 		setAuthenticationManager(authManager);
@@ -39,7 +39,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 	protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
 			Authentication auth) throws IOException, ServletException {
 
-		TokenAuthenticationService.addAuthentication(res, auth.getName());
 
 		CustomUserDetails details = (CustomUserDetails) auth.getPrincipal();
 		User user = details.getUser();
@@ -48,5 +47,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 		res.addHeader("firstName", user.getName());
 //		Boolean isAdmin = (user.getAdmin() != null ? user.getAdmin() : false);
 //		res.addHeader("isAdmin", String.valueOf(isAdmin));
+		
+		TokenAuthenticationService.addAuthentication(res, new UserAuthentication(details.getUsername(), details.getUser().getRoles()));
 	}
 }

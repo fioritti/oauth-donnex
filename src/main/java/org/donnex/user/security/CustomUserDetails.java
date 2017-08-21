@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
-public class CustomUserDetails extends User implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private List<String> userRoles;
@@ -47,12 +47,19 @@ public class CustomUserDetails extends User implements UserDetails {
         return true;
     }
 
-    @Override	
-    public String getUsername() {
-        return super.getEmail();
+    
+    @Override
+    public String getPassword() {
+    	return user.getPassword();
     }
 
-    public User getUser() {
-        return user;
-    }
+	@Override
+	public String getUsername() {
+		return user.getEmail();
+	}
+
+	public User getUser() {
+		return user;
+	}
+    
 }
