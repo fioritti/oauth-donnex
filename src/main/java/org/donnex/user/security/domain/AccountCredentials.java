@@ -1,4 +1,4 @@
-package org.donnex.user.security;
+package org.donnex.user.security.domain;
 
 public class AccountCredentials {
 	

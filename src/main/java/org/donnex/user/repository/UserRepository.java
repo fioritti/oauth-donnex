@@ -1,6 +1,6 @@
 package org.donnex.user.repository;
 
-import org.donnex.user.model.User;
+import org.donnex.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

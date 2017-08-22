@@ -1,9 +1,8 @@
-package org.donnex.user.security;
+package org.donnex.user.security.domain;
 
 import java.util.Collection;
-import java.util.List;
 
-import org.donnex.user.model.User;
+import org.donnex.user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,18 +11,15 @@ import org.springframework.util.StringUtils;
 public class CustomUserDetails implements UserDetails {
 
     private static final long serialVersionUID = 1L;
-    private List<String> userRoles;
     private User user;
 
-    public CustomUserDetails(User user, List<String> userRoles){
+    public CustomUserDetails(User user){
         this.user = user;
-        this.userRoles = userRoles;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
-    String roles=StringUtils.collectionToCommaDelimitedString(userRoles);
+    String roles=StringUtils.collectionToCommaDelimitedString(user.getRoles());
         return AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
     }
 
@@ -44,7 +40,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.isActive();
     }
 
     

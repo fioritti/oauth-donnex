@@ -1,5 +1,8 @@
-package org.donnex.user.security;
+package org.donnex.user.security.configuration;
 
+import org.donnex.user.security.filter.JWTAuthenticationFilter;
+import org.donnex.user.security.filter.JWTLoginFilter;
+import org.donnex.user.security.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
