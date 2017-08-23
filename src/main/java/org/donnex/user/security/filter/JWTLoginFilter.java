@@ -46,7 +46,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 		User user = details.getUser();
 		res.addHeader("userId", user.getId().toString());
 		res.addHeader("username", user.getEmail());
-		res.addHeader("firstName", user.getNome());
+		res.addHeader("firstName", user.getName());
 		
 		TokenAuthenticationService.addAuthentication(res, new UserDTO(user.getEmail(), user.getRoles()));
 	}
